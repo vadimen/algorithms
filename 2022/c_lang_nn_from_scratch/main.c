@@ -7,6 +7,9 @@
  Description : machine learning for embedded systems homework nr 1
  a small nn network with backprop, but I made it a small generic library
  ============================================================================
+ 14 - 17 oct 2022: created, worked ~8 hours a day 
+ 21 oct 2022: tested everything, error is not in implementation, smth logical
+ error function is wrongly implemented for the case when there is more than 1 output neuron
  */
 
 #include <stdio.h>
@@ -90,25 +93,29 @@ int test_neural_net(struct NN_Descriptor *nn, struct Dataset_Descriptor *dts);
 
 int main(void)
 {
+    //srand(17);
     struct NN_Descriptor nn;
     struct Dataset_Descriptor xor_dataset;
 
     //course network
-    nn.nr_layers = 3;//inputs are not taken as a layer
-    nn.input_size = 2;
-    nn.every_layer_size = (int*)malloc(nn.nr_layers * sizeof(int));
-    nn.every_layer_size[0] = 5;
-    nn.every_layer_size[1] = 4;
-    nn.every_layer_size[2] = 1;//outputs are taken as a layer
-    nn.output_size = nn.every_layer_size[2];
-
-    // // my test network
-    // nn.nr_layers = 2; // inputs are not taken as a layer
+    // nn.nr_layers = 3;//inputs are not taken as a layer
     // nn.input_size = 2;
-    // nn.every_layer_size = (int *)malloc(nn.nr_layers * sizeof(int));
-    // nn.every_layer_size[0] = 3;
-    // nn.every_layer_size[1] = 1;
-    // nn.output_size = nn.every_layer_size[1];
+    // nn.every_layer_size = (int*)malloc(nn.nr_layers * sizeof(int));
+    // nn.every_layer_size[0] = 5;
+    // nn.every_layer_size[1] = 4;
+    // nn.every_layer_size[2] = 1;//outputs are taken as a layer
+    // nn.output_size = nn.every_layer_size[2];
+
+    // my test network
+    nn.nr_layers = 5; // inputs are not taken as a layer
+    nn.input_size = 2;
+    nn.every_layer_size = (int *)malloc(nn.nr_layers * sizeof(int));
+    nn.every_layer_size[0] = 5;
+    nn.every_layer_size[1] = 5;
+    nn.every_layer_size[2] = 5;
+    nn.every_layer_size[3] = 5;
+    nn.every_layer_size[4] = 1;
+    nn.output_size = nn.every_layer_size[4];
 
     // cancer network
     // nn.nr_layers = 5; // inputs are not taken as a layer
@@ -128,7 +135,7 @@ int main(void)
 
     show_nn_matrices(&nn);
 
-    train(&nn, &xor_dataset, 10000, 1, 0.001);
+    train(&nn, &xor_dataset, 10000, 1, 0.00001);
     test_neural_net(&nn, &xor_dataset);
 
     //show_nn_matrices(&nn);
@@ -155,9 +162,9 @@ int create_xor_dataset(struct Dataset_Descriptor *dts){
     dts->train_set_outputs[2] = (double*)malloc(dts->dataset_output_cols * sizeof(double));
     dts->train_set_outputs[3] = (double*)malloc(dts->dataset_output_cols * sizeof(double));
 
-    dts->train_set_inputs[0][0] = 0; dts->train_set_inputs[0][1] = 0; dts->train_set_outputs[0][0] = 0;
+    dts->train_set_inputs[2][0] = 0; dts->train_set_inputs[2][1] = 0; dts->train_set_outputs[2][0] = 0;
     dts->train_set_inputs[1][0] = 0; dts->train_set_inputs[1][1] = 1; dts->train_set_outputs[1][0] = 1;
-    dts->train_set_inputs[2][0] = 1; dts->train_set_inputs[2][1] = 0; dts->train_set_outputs[2][0] = 1;
+    dts->train_set_inputs[0][0] = 1; dts->train_set_inputs[0][1] = 0; dts->train_set_outputs[0][0] = 1;
     dts->train_set_inputs[3][0] = 1; dts->train_set_inputs[3][1] = 1; dts->train_set_outputs[3][0] = 0;
 
     //test set
@@ -558,7 +565,7 @@ int print_m_by_n_matrix(double **arr_in, int m, int n)
     {
         for (int j = 0; j < n; j++)
         {
-            printf("%.3f ", *(arr + i * n + j));
+            printf("%f ", *(arr + i * n + j));
         }
         printf("\n\n");
     }
